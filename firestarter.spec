@@ -8,6 +8,7 @@ Release:	 %{release}
 License:	 GPL
 Group:		 System/Configuration/Networking
 URL:		 http://firestarter.sourceforge.net
+BuildRoot:	 %{_tmppath}/%{name}-%{version}-buildroot
 
 Source0:	 %{name}-%{version}.tar.bz2
 Source1:	 %{name}.init.bz2
