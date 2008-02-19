@@ -1,32 +1,24 @@
-%define version  1.0.3
-%define release  %mkrel 9
-
 Summary:	 A GUI firewall tool for GNOME 2
 Name:		 firestarter
-Version:	 %{version}
-Release:	 %{release}
+Version:	 1.0.3
+Release:	 %mkrel 10
 License:	 GPL
 Group:		 System/Configuration/Networking
 URL:		 http://firestarter.sourceforge.net
-BuildRoot:	 %{_tmppath}/%{name}-%{version}-buildroot
-
 Source0:	 %{name}-%{version}.tar.bz2
-Source1:	 %{name}.init.bz2
-
+Source1:	 %{name}.init
 Patch0:          firestarter-1.0.3-fix-Exec.patch
-
 BuildRequires:	 ImageMagick
 BuildRequires:	 libgnomeui2-devel
 Buildrequires:   perl(XML::Parser)
 Buildrequires:   libglade2.0-devel
 Buildrequires:   desktop-file-utils
-
 Requires:	 userspace-ipfilter
 Requires:	 usermode
 Requires:        kdebase-progs
-
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
+BuildRoot:	 %{_tmppath}/%{name}-%{version}-buildroot
 
 %description
 FireStarter is a GUI firewall tool for setting up, monitoring
@@ -43,52 +35,56 @@ and administring Linux firewalls under GUI. It features:
   * Supports Linux kernel versions 2.6, 2.4 and 2.2.
 
 %prep
+
 %setup -q
 %patch0 -p0
+
+cp %{SOURCE1} %{name}.init
 
 %build
 %configure2_5x
 %make
 
 %install
-[ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ] || rm -rf $RPM_BUILD_ROOT
-GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1 %makeinstall_std bindir=%{_sbindir}
-mkdir -p $RPM_BUILD_ROOT%{_bindir}
-ln -sf consolehelper $RPM_BUILD_ROOT%{_bindir}/%{name}
+rm -rf %{buildroot}
 
-mkdir -p $RPM_BUILD_ROOT%{_initrddir}
-bzip2 -dc %{SOURCE1} > $RPM_BUILD_ROOT%{_initrddir}/%{name}
-chmod 0755 $RPM_BUILD_ROOT%{_initrddir}/%{name}
+GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1 %makeinstall_std bindir=%{_sbindir}
+mkdir -p %{buildroot}%{_bindir}
+ln -sf consolehelper %{buildroot}%{_bindir}/%{name}
+
+mkdir -p %{buildroot}%{_initrddir}
+install -m0755 %{name}.init %{buildroot}%{_initrddir}/%{name}
 
 # own firestarter generated files
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/%{name}
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}
 for i in blocked-hosts blocked-ports forward open-ports stealthed-ports trusted-hosts; do
-  touch $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/$i
+  touch %{buildroot}%{_sysconfdir}/%{name}/$i
 done
-echo '#!/bin/sh' > $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/firewall.sh
+echo '#!/bin/sh' > %{buildroot}%{_sysconfdir}/%{name}/firewall.sh
 
 %{find_lang} %{name}
 
 ### icons and menu entry
-mkdir -p $RPM_BUILD_ROOT%{_iconsdir}  \
-	 $RPM_BUILD_ROOT%{_liconsdir} \
-	 $RPM_BUILD_ROOT%{_miconsdir}
-install -m 0644         pixmaps/firestarter.png $RPM_BUILD_ROOT%{_liconsdir}/%{name}.png
-convert -geometry 32x32 pixmaps/firestarter.png $RPM_BUILD_ROOT%{_iconsdir}/%{name}.png
-convert -geometry 16x16 pixmaps/firestarter.png $RPM_BUILD_ROOT%{_miconsdir}/%{name}.png
+mkdir -p %{buildroot}%{_iconsdir}  \
+	 %{buildroot}%{_liconsdir} \
+	 %{buildroot}%{_miconsdir}
+install -m 0644         pixmaps/firestarter.png %{buildroot}%{_liconsdir}/%{name}.png
+convert -geometry 32x32 pixmaps/firestarter.png %{buildroot}%{_iconsdir}/%{name}.png
+convert -geometry 16x16 pixmaps/firestarter.png %{buildroot}%{_miconsdir}/%{name}.png
 
 ## xdg
-mkdir -p $RPM_BUILD_ROOT%_datadir/applications
-cp $RPM_BUILD_ROOT%_datadir/gnome/apps/Internet/firestarter.desktop $RPM_BUILD_ROOT%_datadir/applications
+mkdir -p %{buildroot}%_datadir/applications
+cp %{buildroot}%_datadir/gnome/apps/Internet/firestarter.desktop %{buildroot}%_datadir/applications
+perl -pi -e "s|%{name}\.png|%{name}|g" %{buildroot}%_datadir/applications/firestarter.desktop
 
 desktop-file-install --vendor="" \
   --remove-category="Application" \
   --add-category="X-MandrivaLinux-System-Configuration-Networking;Settings;Network" \
-  --dir $RPM_BUILD_ROOT%{_datadir}/applications $RPM_BUILD_ROOT%{_datadir}/applications/*
+  --dir %{buildroot}%{_datadir}/applications %{buildroot}%{_datadir}/applications/*
 
 ### consolehelper entry
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/security/console.apps
-cat > $RPM_BUILD_ROOT%{_sysconfdir}/security/console.apps/%{name} <<EOF
+mkdir -p %{buildroot}%{_sysconfdir}/security/console.apps
+cat > %{buildroot}%{_sysconfdir}/security/console.apps/%{name} <<EOF
 USER=root
 PROGRAM=%{_sbindir}/%{name}
 SESSION=true
@@ -96,8 +92,8 @@ FALLBACK=false
 EOF
 
 ### pam entry
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/pam.d
-cat > $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/%{name} <<EOF
+mkdir -p %{buildroot}%{_sysconfdir}/pam.d
+cat > %{buildroot}%{_sysconfdir}/pam.d/%{name} <<EOF
 auth       sufficient   pam_rootok.so
 auth       required     pam_pwdb.so
 session    optional     pam_xauth.so
@@ -118,7 +114,7 @@ if [ $1 -eq 1 ]; then
   echo "or firestarter to control your firewall, using chkconfig."
 fi
 %_post_service %{name}
-%{update_menus}
+%update_menus
 
 %preun
 %_preun_service %{name}
@@ -127,14 +123,14 @@ if [ "$1" = "0" ]; then
 fi
 
 %postun
-%{clean_menus}
+%clean_menus
 
 %triggerpostun -- firestarter <= 0.9.2-1mdk
 echo "You have to decide whether to let iptables startup script"
 echo "or firestarter to control your firewall, using chkconfig."
 
 %clean
-[ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ] || rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files -f %{name}.lang
 %defattr(-,root,root)
@@ -148,7 +144,7 @@ echo "or firestarter to control your firewall, using chkconfig."
 %{_iconsdir}/%{name}.png
 %{_liconsdir}/%{name}.png
 %{_miconsdir}/%{name}.png
-%config(noreplace) %{_initrddir}/%{name}
+%{_initrddir}/%{name}
 %config(noreplace) %{_sysconfdir}/pam.d/%{name}
 %config(noreplace) %{_sysconfdir}/security/console.apps/%{name}
 %dir %{_sysconfdir}/%{name}
@@ -161,7 +157,3 @@ echo "or firestarter to control your firewall, using chkconfig."
 %ghost %{_sysconfdir}/%{name}/stealthed-ports
 %ghost %{_sysconfdir}/%{name}/trusted-hosts
 %{_sysconfdir}/gconf/schemas/*
-
-
-
-
