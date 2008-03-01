@@ -1,13 +1,12 @@
 Summary:	 A GUI firewall tool for GNOME 2
 Name:		 firestarter
 Version:	 1.0.3
-Release:	 %mkrel 11
+Release:	 %mkrel 12
 License:	 GPL
 Group:		 System/Configuration/Networking
 URL:		 http://firestarter.sourceforge.net
 Source0:	 %{name}-%{version}.tar.bz2
 Source1:	 %{name}.init
-Patch0:          firestarter-1.0.3-fix-Exec.patch
 BuildRequires:	 ImageMagick
 BuildRequires:	 libgnomeui2-devel
 Buildrequires:   perl(XML::Parser)
@@ -36,7 +35,6 @@ and administring Linux firewalls under GUI. It features:
 %prep
 
 %setup -q
-%patch0 -p0
 
 cp %{SOURCE1} %{name}.init
 
