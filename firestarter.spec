@@ -98,7 +98,7 @@ account    required     pam_permit.so
 EOF
 
 %post
-GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`  gconftool-2 --makefile-install-rule %{_sysconfdir}/gconf/schemas/firestarter.schemas > /dev/null
+%post_install_gconf_schemas firestarter
 
 if [ $1 -eq 1 ]; then
   touch %{_sysconfdir}/%{name}/blocked-hosts	\
@@ -115,9 +115,7 @@ fi
 
 %preun
 %_preun_service %{name}
-if [ "$1" = "0" ]; then
-  GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`  gconftool-2 --makefile-uninstall-rule %{_sysconfdir}/gconf/schemas/firestarter.schemas > /dev/null
-fi
+%preun_uninstall_gconf_schemas "$1"
 
 %postun
 %clean_menus
