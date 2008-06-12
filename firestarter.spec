@@ -98,7 +98,9 @@ account    required     pam_permit.so
 EOF
 
 %post
+%if %mdkversion < 200900
 %post_install_gconf_schemas firestarter
+%endif
 
 if [ $1 -eq 1 ]; then
   touch %{_sysconfdir}/%{name}/blocked-hosts	\
@@ -111,14 +113,18 @@ if [ $1 -eq 1 ]; then
   echo "or firestarter to control your firewall, using chkconfig."
 fi
 %_post_service %{name}
+%if %mdkversion < 200900
 %update_menus
+%endif
 
 %preun
 %_preun_service %{name}
 %preun_uninstall_gconf_schemas "$1"
 
+%if %mdkversion < 200900
 %postun
 %clean_menus
+%endif
 
 %triggerpostun -- firestarter <= 0.9.2-1mdk
 echo "You have to decide whether to let iptables startup script"
