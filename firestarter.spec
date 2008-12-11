@@ -7,7 +7,7 @@ Group:		 System/Configuration/Networking
 URL:		 http://firestarter.sourceforge.net
 Source0:	 %{name}-%{version}.tar.bz2
 Source1:	 %{name}.init
-BuildRequires:	 ImageMagick
+BuildRequires:	 imagemagick
 BuildRequires:	 libgnomeui2-devel
 Buildrequires:   perl(XML::Parser)
 Buildrequires:   libglade2.0-devel
