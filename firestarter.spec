@@ -1,7 +1,7 @@
 Summary:	 A GUI firewall tool for GNOME 2
 Name:		 firestarter
 Version:	 1.0.3
-Release:	 %mkrel 14
+Release:	 %mkrel 15
 License:	 GPL
 Group:		 System/Configuration/Networking
 URL:		 http://firestarter.sourceforge.net
