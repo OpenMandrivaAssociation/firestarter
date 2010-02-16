@@ -7,6 +7,7 @@ Group:		 System/Configuration/Networking
 URL:		 http://firestarter.sourceforge.net
 Source0:	 %{name}-%{version}.tar.bz2
 Source1:	 %{name}.init
+Patch0:		 firestarter-1.0.3-fix-str-fmt.patch
 BuildRequires:	 imagemagick
 BuildRequires:	 libgnomeui2-devel
 Buildrequires:   perl(XML::Parser)
@@ -33,8 +34,8 @@ and administring Linux firewalls under GUI. It features:
   * Supports Linux kernel versions 2.6, 2.4 and 2.2.
 
 %prep
-
 %setup -q
+%patch0 -p0
 
 cp %{SOURCE1} %{name}.init
 
