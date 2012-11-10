@@ -1,0 +1,45 @@
+--- src/preferences.c.str	2010-02-16 17:13:30.000000000 +0100
++++ src/preferences.c	2010-02-16 17:13:43.000000000 +0100
+@@ -161,7 +161,7 @@
+ 		GtkWidget *dialog;
+ 
+ 		dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_DESTROY_WITH_PARENT,
+-        	                                 GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, msg);
++        	                                 GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s", msg);
+ 		gtk_dialog_run (GTK_DIALOG (dialog));
+ 		gtk_widget_destroy (dialog);
+ 		exit(1);
+--- src/scriptwriter.c.str	2010-02-16 17:13:58.000000000 +0100
++++ src/scriptwriter.c	2010-02-16 17:14:53.000000000 +0100
+@@ -491,11 +491,11 @@
+ 	}
+ 
+ 	rewind (f);
+-	fprintf (f, FIRESTARTER_HOOK);
++	fprintf (f, "%s", FIRESTARTER_HOOK);
+ 
+ 	link = list;
+ 	while (link != NULL) {
+-		fprintf (f, link->data);
++		fprintf (f, "%s", link->data);
+ 		g_free (link->data);
+ 		link = link->next;
+ 	}
+@@ -544,7 +544,7 @@
+ 
+ 		link = newlist;
+ 		while (link != NULL) {
+-			fprintf (f, link->data);
++			fprintf (f, "%s", link->data);
+ 			g_free (link->data);
+ 			link = link->next;
+ 		}
+@@ -580,7 +580,7 @@
+ 			return;
+ 		}
+ 
+-		fprintf (f, FIRESTARTER_HOOK);
++		fprintf (f, "%s", FIRESTARTER_HOOK);
+ 		fclose (f);
+ 	}
+ }
