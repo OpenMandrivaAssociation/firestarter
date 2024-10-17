@@ -4,7 +4,7 @@ Version:	 1.0.3
 Release:	 %mkrel 17
 License:	 GPL
 Group:		 System/Configuration/Networking
-URL:		 http://firestarter.sourceforge.net
+URL:		 https://firestarter.sourceforge.net
 Source0:	 %{name}-%{version}.tar.bz2
 Source1:	 %{name}.init
 Patch0:		 firestarter-1.0.3-fix-str-fmt.patch
